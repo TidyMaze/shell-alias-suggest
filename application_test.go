@@ -36,11 +36,12 @@ func TestRecommend(t *testing.T) {
 	tables := []struct {
 		aliases []alias
 		command string
-		result  []string
+		result  []alias
 	}{
-		{aliases, "ls -l file.txt", []string{"ll"}},
-		{aliases, "ls -F --color=auto --show-control-chars file.txt", []string{"ls"}},
-		{aliases, "BLA", []string{}},
+		{aliases, "ls -l file.txt", []alias{alias{"ll", "ls -l"}}},
+		{aliases, "ls -F --color=auto --show-control-chars file.txt", []alias{{"ls", "ls -F --color=auto --show-control-chars"}}},
+		{aliases, "BLA", []alias{}},
+		{aliases, "ls -l ls -F --color=auto --show-control-chars file.txt", []alias{{"ll", "ls -l"}, {"ls", "ls -F --color=auto --show-control-chars"}}},
 	}
 
 	for _, test := range tables {
@@ -73,8 +74,9 @@ func TestFancyPrintRecommendations(t *testing.T) {
 		command string
 		result  string
 	}{
-		{aliases, "ls -l file.txt", "You could use following aliases : ll"},
-		{aliases, "ls -F --color=auto --show-control-chars file.txt", "You could use following aliases : ls"},
+		{aliases, "ls -l file.txt", "You could use following aliases :\n\t-\t\"ls -l\" => \"ll\"\n"},
+		{aliases, "ls -F --color=auto --show-control-chars file.txt", "You could use following aliases :\n\t-\t\"ls -F --color=auto --show-control-chars\" => \"ls\"\n"},
+		{aliases, "ls -l ls -F --color=auto --show-control-chars file.txt", "You could use following aliases :\n\t-\t\"ls -l\" => \"ll\"\n\t-\t\"ls -F --color=auto --show-control-chars\" => \"ls\"\n"},
 		{aliases, "BLA", ""},
 	}
 

@@ -25,10 +25,13 @@ func extractAliases(in string) []alias {
 	for i, match := range matches {
 		aliases[i] = alias{match[1], match[2]}
 	}
+
+	fmt.Print("Parsed :")
+	fmt.Println(aliases)
 	return aliases
 }
 
-func recommend(aliases []alias, command string) []string {
+func recommend(aliases []alias, command string) []alias {
 	matchingAliases := []alias{}
 
 	for _, alias := range aliases {
@@ -37,23 +40,22 @@ func recommend(aliases []alias, command string) []string {
 		}
 	}
 
-	if len(matchingAliases) > 0 {
-		return []string{
-			matchingAliases[0].short,
-		}
-	}
-	return []string{}
+	return matchingAliases
 }
 
 func fancyPrintRecommendations(aliases []alias, command string) string {
 	recommendations := recommend(aliases, command)
 	if len(recommendations) == 0 {
-		log.Printf("No recommendation found for %s", command)
 		return ""
 	}
-	recoAsString := strings.Join(recommendations, ",")
-	log.Printf("Some recommendations found for %s : %s", command, recoAsString)
-	return fmt.Sprintf("You could use following aliases : %s", recoAsString)
+
+	recoAsString := ""
+
+	for _, alias := range recommendations {
+		recoAsString += fmt.Sprintf("\t-\t\"%s\" => \"%s\"\n", alias.long, alias.short)
+	}
+
+	return fmt.Sprintf("You could use following aliases :\n%s", recoAsString)
 }
 
 func queryAliasCmd() string {
@@ -67,9 +69,6 @@ func queryAliasCmd() string {
 func main() {
 	command := "ls -l file"
 	aliases := extractAliases(queryAliasCmd())
-
-	fmt.Print("Parsed :")
-	fmt.Println(aliases)
 
 	fmt.Println(fancyPrintRecommendations(aliases, command))
 }
