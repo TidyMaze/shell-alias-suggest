@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -26,8 +27,8 @@ func extractAliases(in string) []alias {
 		aliases[i] = alias{match[1], match[2]}
 	}
 
-	fmt.Print("Parsed :")
-	fmt.Println(aliases)
+	// fmt.Print("Parsed :")
+	// fmt.Println(aliases)
 	return aliases
 }
 
@@ -72,9 +73,26 @@ func queryAliasCmd() string {
 	return string(out)
 }
 
+// func queryBashCommand() string {
+// 	out, err := exec.Command("C:\\Program Files\\Git\\bin\\bash.exe", "--login", "-i", "-c", "echo $BASH_COMMAND").Output()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return string(out)
+// }
+
 func main() {
-	command := "ls -l file"
+	// fmt.Println("Starting suggest ...")
+
+	command := os.Args[1:][0]
+	// fmt.Println("Command: " + command)
+
 	aliases := extractAliases(queryAliasCmd())
 
-	fmt.Println(fancyPrintRecommendations(aliases, command))
+	fancy := fancyPrintRecommendations(aliases, command)
+
+	if len(fancy) > 0 {
+		fmt.Println()
+		fmt.Println(fancy)
+	}
 }
