@@ -50,12 +50,18 @@ func fancyPrintRecommendations(aliases []alias, command string) string {
 	}
 
 	recoAsString := ""
+	replacements := []string{}
 
 	for _, alias := range recommendations {
 		recoAsString += fmt.Sprintf("\t-\t\"%s\" => \"%s\"\n", alias.long, alias.short)
+		replacements = append(replacements, alias.long)
+		replacements = append(replacements, alias.short)
 	}
 
-	return fmt.Sprintf("You could use following aliases :\n%s", recoAsString)
+	replacer := strings.NewReplacer(replacements...)
+	improved := replacer.Replace(command)
+
+	return fmt.Sprintf("You could use following aliases :\n%s\t=> result: \"%s\"\n", recoAsString, improved)
 }
 
 func queryAliasCmd() string {
